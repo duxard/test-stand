@@ -58,8 +58,32 @@ export default class TodoList extends React.Component {
           <div className="row">
             <div className="input-field col s12">
               <label htmlFor="newHerokyItem">Add item: </label>
-              <input type="text" id="newHerokyItem" className="validate" value={this.state.inputText} onChange={this.handleChange} />
-              <input type="submit"  value="Add new item" />
+              <input type="text" id="newHerokyItem"
+                className="validate"
+                value={this.state.inputText}
+                onChange={this.handleChange}
+              />
+              <button className="btn waves-effect waves-light center-align" type="submit">Submit
+                <i className="material-icons" />
+              </button>
+            </div>
+            <div className="input-field col s12">
+              <ul id="list">
+                {
+                  this.state.todos.length ? (
+                    this.state.todos.map((item, index) => {
+                      return (
+                        <li key={index} data-itemid={item._id}>
+                          {item.item}
+                          <button onClick={this.handleDelete}>Delete</button>
+                        </li>
+                      )
+                    })
+                  ) : (
+                    <p id="todosLoadingStatus">Nothing to show</p>
+                  )
+                }
+              </ul>
             </div>
           </div>
         </form>
