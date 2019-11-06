@@ -1,6 +1,8 @@
 import React from 'react';
 import axios from 'axios';
 
+import './css/todoList.scss';
+
 export default class TodoList extends React.Component {
   constructor() {
     super();
@@ -74,7 +76,7 @@ export default class TodoList extends React.Component {
                     this.state.todos.map((item, index) => {
                       return (
                         <li key={index} data-itemid={item._id}>
-                          {item.item}
+                          <span>{item.item}</span>
                           <button onClick={this.handleDelete}>Delete</button>
                         </li>
                       )
