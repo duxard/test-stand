@@ -77,7 +77,7 @@ export default class TodoList extends React.Component {
                       return (
                         <li key={index} data-itemid={item._id}>
                           <span>{item.item}</span>
-                          <button onClick={this.handleDelete}>Delete</button>
+                          <button className="btn" onClick={this.handleDelete}>Delete</button>
                         </li>
                       )
                     })
