@@ -15,6 +15,7 @@ export default class TodoList extends React.Component {
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleDelete = this.handleDelete.bind(this);
   }
 /*
   async componentDidMount() {
@@ -53,6 +54,10 @@ export default class TodoList extends React.Component {
     e.preventDefault();
   }
 
+  handleDelete(e) {
+    console.log('delete');
+  }
+
   render() {
     return (
       <div className="row">
@@ -76,10 +81,11 @@ export default class TodoList extends React.Component {
                   this.state.todos.length ? (
                     this.state.todos.map((item, index) => {
                       return (
-                        <li key={index} data-itemid={item._id}>
-                          <span>{item.item}</span>
-                          <button className="btn" onClick={this.handleDelete}>Delete</button>
-                        </li>
+                        <ListItem key={index}
+                                  dataItemId={item._id}
+                                  item={item.item}
+                                  parentHandleDelete={this.handleDelete}
+                        />
                       )
                     })
                   ) : (
