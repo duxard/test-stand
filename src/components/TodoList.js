@@ -10,7 +10,8 @@ export default class TodoList extends React.Component {
 
     this.state = {
       inputText: "",
-      todos: []
+      todos: [],
+      emptyList: "Nothing to show"
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -41,7 +42,12 @@ export default class TodoList extends React.Component {
           console.log( this.state.todos );
         });
       })
-      .catch(e => console.error( e ));
+      .catch(e => {
+        this.setState({
+          emptyList: "Smth went wrong. Check out console log"
+        });
+        console.error( e );
+      });
   }
 
   handleChange(e) {
@@ -52,6 +58,26 @@ export default class TodoList extends React.Component {
 
   handleSubmit(e) {
     e.preventDefault();
+    console.log(  this.state.inputText);
+
+    axios.post('https://asta-web-1.herokuapp.com/api/todo', {item: this.state.inputText})
+      .then(response => {
+        if(response.status === 200 && response.statusText === 'OK') {
+          console.log(`HerokuList.handleSubmit(): Sending data to MongoDB: Success`);
+          let newArrayOfTodos = [...this.state.todos, {_id: response.data._id, item: response.data.item}];
+          this.setState({
+              todos: newArrayOfTodos
+          });
+        } else {
+            throw new Error(`Server response status: ${response.status}`);
+        }
+      })
+      .catch(e => console.error( `Failed to save to Mongo: ${e}` ));
+
+    this.setState({
+        inputText: ""
+    });
+
   }
 
   handleDelete(e) {
@@ -89,7 +115,7 @@ export default class TodoList extends React.Component {
                       )
                     })
                   ) : (
-                    <p id="todosLoadingStatus">Nothing to show</p>
+                    <p id="todosLoadingStatus">{this.state.emptyList}</p>
                   )
                 }
               </ul>
