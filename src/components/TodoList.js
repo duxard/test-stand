@@ -58,12 +58,11 @@ export default class TodoList extends React.Component {
 
   handleSubmit(e) {
     e.preventDefault();
-    console.log(  this.state.inputText);
 
     axios.post('https://asta-web-1.herokuapp.com/api/todo', {item: this.state.inputText})
       .then(response => {
         if(response.status === 200 && response.statusText === 'OK') {
-          console.log(`HerokuList.handleSubmit(): Sending data to MongoDB: Success`);
+          console.log(`${this.constructor.name}: Sending data to MongoDB: Success`);
           let newArrayOfTodos = [...this.state.todos, {_id: response.data._id, item: response.data.item}];
           this.setState({
               todos: newArrayOfTodos
@@ -72,23 +71,40 @@ export default class TodoList extends React.Component {
             throw new Error(`Server response status: ${response.status}`);
         }
       })
-      .catch(e => console.error( `Failed to save to Mongo: ${e}` ));
+      .catch(e => {
+        console.error( `${this.constructor.name}: failed to save to Mongo: ${e}` )
+      });
 
     this.setState({
         inputText: ""
     });
-
   }
 
-  handleDelete(e) {
-    console.log('delete');
+  handleDelete(removeItemId) {
+    axios.delete(`https://asta-web-1.herokuapp.com/api/todo/${removeItemId}`)
+      .then(response => {
+        if(response.status === 200 && response.statusText === 'OK') {
+          console.log(`${this.constructor.name}: Deleting from MongoDB: Success`);
+          let index = this.state.todos.findIndex(el => el._id === removeItemId);
+          let newArrayOfTodos = this.state.todos;
+          newArrayOfTodos.splice(index, 1);
+          this.setState({
+            todos: newArrayOfTodos
+          });
+        } else {
+          throw new Error(`Server response status: ${response.status}`);
+        }
+      })
+      .catch(error => {
+        console.error(`${this.constructor.name}: Failed to delete from Mongo: ${error}`)
+      });
   }
 
   render() {
     return (
       <div className="row">
 
-        <form className="col s12" onSubmit={this.handleSubmit}>
+        <form name="form1" className="col s12" onSubmit={this.handleSubmit}>
           <div className="row">
             <div className="input-field col s12">
               <label htmlFor="newHerokyItem">Add item: </label>
@@ -101,6 +117,11 @@ export default class TodoList extends React.Component {
                 <i className="material-icons" />
               </button>
             </div>
+          </div>
+        </form>
+
+        <form name="form2" className="col s12">
+          <div className="row">
             <div className="input-field col s12">
               <ul id="list">
                 {
