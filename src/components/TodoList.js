@@ -11,7 +11,7 @@ export default class TodoList extends React.Component {
     this.state = {
       inputText: "",
       todos: [],
-      emptyList: "Nothing to show"
+      emptyList: ""
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -65,19 +65,17 @@ export default class TodoList extends React.Component {
           console.log(`${this.constructor.name}: Sending data to MongoDB: Success`);
           let newArrayOfTodos = [...this.state.todos, {_id: response.data._id, item: response.data.item}];
           this.setState({
-              todos: newArrayOfTodos
+              todos: newArrayOfTodos,
+              inputText: ""
           });
         } else {
             throw new Error(`Server response status: ${response.status}`);
         }
       })
       .catch(e => {
+        this.showErrorMessage();
         console.error( `${this.constructor.name}: failed to save to Mongo: ${e}` )
       });
-
-    this.setState({
-        inputText: ""
-    });
   }
 
   handleDelete(removeItemId) {
@@ -96,15 +94,25 @@ export default class TodoList extends React.Component {
         }
       })
       .catch(error => {
+        this.showErrorMessage();
         console.error(`${this.constructor.name}: Failed to delete from Mongo: ${error}`)
       });
+  }
+
+  showErrorMessage() {
+    this.errorMessage.classList.remove("hidden")
+    this.errorMessage.classList.add("fademe");
+    setTimeout(() => {
+      this.errorMessage.classList.remove("fademe");
+      this.errorMessage.classList.add("hidden");
+    }, 2000);
   }
 
   render() {
     return (
       <div className="row">
 
-        <form name="form1" className="col s12" onSubmit={this.handleSubmit}>
+        <form name="form1" className="col s12" onSubmit={this.handleSubmit} autoComplete="off">
           <div className="row">
             <div className="input-field col s12">
               <label htmlFor="newHerokyItem">Add item: </label>
@@ -120,6 +128,7 @@ export default class TodoList extends React.Component {
           </div>
         </form>
 
+        <p ref={elem => this.errorMessage = elem} className="errorMessage hidden">Smth went wrong...</p>
         <form name="form2" className="col s12">
           <div className="row">
             <div className="input-field col s12">

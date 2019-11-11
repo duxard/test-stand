@@ -1,3 +1,9 @@
+$fademeProps: fade-out 1.5s linear;
+
+.col.s12 {
+  margin-top: 10px;
+}
+
 #list {
   list-style-type: none;
   padding: 0;
@@ -26,4 +32,55 @@
 
 .deleteBtn {
   width: 100px;
+}
+
+.fademe {
+  animation: $fademeProps;
+  -moz-animation: $fademeProps;
+  -webkit-animation: $fademeProps;
+  -o-animation: $fademeProps;
+}
+
+@keyframes fade-out {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@-webkit-keyframes fade-out {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@-moz-keyframes fade-out {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@-o-keyframes fade-out {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.errorMessage {
+  color: red;
+}
+
+.hidden {
+  visibility: hidden;
 }
