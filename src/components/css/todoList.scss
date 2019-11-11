@@ -84,3 +84,7 @@ $fademeProps: fade-out 1.5s linear;
 .hidden {
   visibility: hidden;
 }
+
+.btn:focus, .btn-large:focus, .btn-small:focus, .btn-floating:focus {
+  background-color: #2ab7a9;
+}

@@ -11,7 +11,8 @@ export default class TodoList extends React.Component {
     this.state = {
       inputText: "",
       todos: [],
-      emptyList: ""
+      emptyList: "",
+      inputFieldStatus: true
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -52,14 +53,17 @@ export default class TodoList extends React.Component {
 
   handleChange(e) {
     this.setState({
-      inputText: e.target.value
+      inputText: e.target.value,
+      inputFieldStatus: ( e.target.value.length ? false : true )
     });
   }
 
   handleSubmit(e) {
     e.preventDefault();
 
-    axios.post('https://asta-web-1.herokuapp.com/api/todo', {item: this.state.inputText})
+    axios.post('https://asta-web-1.herokuapp.com/api/todo', {
+      item: this.state.inputText.replace(/^\s+|\s+$/g, "")
+    })
       .then(response => {
         if(response.status === 200 && response.statusText === 'OK') {
           console.log(`${this.constructor.name}: Sending data to MongoDB: Success`);
@@ -116,12 +120,15 @@ export default class TodoList extends React.Component {
           <div className="row">
             <div className="input-field col s12">
               <label htmlFor="newHerokyItem">Add item: </label>
-              <input type="text" id="newHerokyItem"
-                className="validate"
-                value={this.state.inputText}
-                onChange={this.handleChange}
+              <input type="text"
+                      id="newHerokyItem"
+                      className="validate"
+                      value={this.state.inputText}
+                      onChange={this.handleChange}
               />
-              <button className="btn waves-effect waves-light center-align" type="submit">Submit
+              <button className="btn waves-effect waves-light center-align"
+                      type="submit"
+                      disabled={this.state.inputFieldStatus}>Submit
                 <i className="material-icons" />
               </button>
             </div>
