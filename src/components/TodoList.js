@@ -15,6 +15,8 @@ export default class TodoList extends React.Component {
       inputFieldStatus: true
     };
 
+    this.DOM = {};
+
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
@@ -49,6 +51,8 @@ export default class TodoList extends React.Component {
         });
         console.error( e );
       });
+
+      this.DOM.inputTextItem = document.getElementById("newHerokyItem");
   }
 
   handleChange(e) {
@@ -70,8 +74,11 @@ export default class TodoList extends React.Component {
           let newArrayOfTodos = [...this.state.todos, {_id: response.data._id, item: response.data.item}];
           this.setState({
               todos: newArrayOfTodos,
-              inputText: ""
+              inputText: "",
+              inputFieldStatus: true
           });
+
+          this.DOM.inputTextItem.classList.remove("valid");
         } else {
             throw new Error(`Server response status: ${response.status}`);
         }
