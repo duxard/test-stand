@@ -65,8 +65,17 @@ export default class TodoList extends React.Component {
   handleSubmit(e) {
     e.preventDefault();
 
+    let itemToSend = this.state.inputText.replace(/^\s+|\s+$/g, "");
+    if(!itemToSend) {
+      this.showErrorMessage();
+      this.setState({
+        inputText: ""
+      });
+      return;
+    }
+
     axios.post('https://asta-web-1.herokuapp.com/api/todo', {
-      item: this.state.inputText.replace(/^\s+|\s+$/g, "")
+      item: itemToSend
     })
       .then(response => {
         if(response.status === 200 && response.statusText === 'OK') {
@@ -77,7 +86,7 @@ export default class TodoList extends React.Component {
               inputText: "",
               inputFieldStatus: true
           });
-
+          // fix for materialize default behavior
           this.DOM.inputTextItem.classList.remove("valid");
         } else {
             throw new Error(`Server response status: ${response.status}`);
