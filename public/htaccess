@@ -3,10 +3,10 @@
 php_value display_errors 1
 # DO NOT REMOVE OR MODIFY THIS LINE AND THE LINES ABOVE HTID:11567908:
 
-#Options -MultiViews
-#RewriteEngine On
-#RewriteCond %{REQUEST_FILENAME} !-f
-#RewriteRule ^ index.html [QSA,L]
+Options -MultiViews
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^ index.html [QSA,L]
 
 # root path for hosting
-SetEnv DOC_ROOT https://asta-ts-1.000webhostapp.com/
+#SetEnv DOC_ROOT https://asta-ts-1.000webhostapp.com/
