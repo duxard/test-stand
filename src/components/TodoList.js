@@ -42,7 +42,7 @@ export default class TodoList extends React.Component {
       .then(response => {
         const jsonResponse = response.data;
         this.setState({todos: jsonResponse}, () => {
-          console.log( this.state.todos );
+          console.log( "Received data from MongoDB" );
         });
       })
       .catch(e => {
