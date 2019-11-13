@@ -12,7 +12,7 @@ import './index.css';
 export default class App extends React.Component {
   render() {
     return (
-      <BrowserRouter>
+      <BrowserRouter basename={process.env.DOC_ROOT || ''}>
         <div className="App">
           <Navbar />
           <Switch>
