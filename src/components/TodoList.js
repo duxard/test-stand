@@ -1,5 +1,6 @@
 import React from 'react';
 import ListItem from './ListItem';
+import Spinner from './Spinner';
 import axios from 'axios';
 
 import './css/todoList.scss';
@@ -11,15 +12,11 @@ export default class TodoList extends React.Component {
     this.state = {
       inputText: "",
       todos: [],
-      emptyList: "",
-      inputFieldStatus: true
+      inputFieldStatus: true,
+      postsAreLoading: true
     };
 
     this.DOM = {};
-
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleDelete = this.handleDelete.bind(this);
   }
 /*
   async componentDidMount() {
@@ -38,16 +35,19 @@ export default class TodoList extends React.Component {
   }
 */
   componentDidMount() {
-    axios.get('https://asta-web-1.herokuapp.com/api/todo', {timeout: 1500})
+    axios.get('https://asta-web-1.herokuapp.com/api/todo', {timeout:1500})
       .then(response => {
         const jsonResponse = response.data;
-        this.setState({todos: jsonResponse}, () => {
+        this.setState({
+          todos: jsonResponse,
+          postsAreLoading: false
+        }, () => {
           console.log( "Received data from MongoDB" );
         });
       })
       .catch(e => {
         this.setState({
-          emptyList: "Smth went wrong. Check out console log"
+          postsAreLoading: false
         });
         console.error( e );
       });
@@ -55,14 +55,14 @@ export default class TodoList extends React.Component {
       this.DOM.inputTextItem = document.getElementById("newHerokyItem");
   }
 
-  handleChange(e) {
+  handleChange = (e) => {
     this.setState({
       inputText: e.target.value,
       inputFieldStatus: ( e.target.value.length ? false : true )
     });
   }
 
-  handleSubmit(e) {
+  handleSubmit = (e) => {
     e.preventDefault();
 
     let itemToSend = this.state.inputText.replace(/^\s+|\s+$/g, "");
@@ -79,7 +79,7 @@ export default class TodoList extends React.Component {
     })
       .then(response => {
         if(response.status === 200 && response.statusText === 'OK') {
-          console.log(`${this.constructor.name}: Sending data to MongoDB: Success`);
+          console.log(`Saving data to MongoDB: Success`);
           let newArrayOfTodos = [...this.state.todos, {_id: response.data._id, item: response.data.item}];
           this.setState({
               todos: newArrayOfTodos,
@@ -98,7 +98,7 @@ export default class TodoList extends React.Component {
       });
   }
 
-  handleDelete(removeItemId) {
+  handleDelete = (removeItemId) => {
     axios.delete(`https://asta-web-1.herokuapp.com/api/todo/${removeItemId}`)
       .then(response => {
         if(response.status === 200 && response.statusText === 'OK') {
@@ -128,36 +128,47 @@ export default class TodoList extends React.Component {
     }, 2000);
   }
 
-  render() {
+  submitFormPanel = () => {
     return (
-      <div className="row">
-
-        <form name="form1" className="col s12" onSubmit={this.handleSubmit} autoComplete="off">
-          <div className="row">
-            <div className="input-field col s12">
-              <label htmlFor="newHerokyItem">Add item: </label>
-              <input type="text"
-                      id="newHerokyItem"
-                      className="validate"
-                      value={this.state.inputText}
-                      onChange={this.handleChange}
-              />
-              <button className="btn waves-effect waves-light center-align"
-                      type="submit"
-                      disabled={this.state.inputFieldStatus}>Submit
-                <i className="material-icons" />
-              </button>
-            </div>
+      <form name="form1" className="col s12" onSubmit={this.handleSubmit} autoComplete="off">
+        <div className="row">
+          <div className="input-field col s12">
+            <label htmlFor="newHerokyItem">Add item: </label>
+            <input type="text"
+                    id="newHerokyItem"
+                    className="validate"
+                    value={this.state.inputText}
+                    onChange={this.handleChange}
+            />
+            <button className="btn waves-effect waves-light center-align"
+                    type="submit"
+                    disabled={this.state.inputFieldStatus}>Submit
+              <i className="material-icons" />
+            </button>
           </div>
-        </form>
+        </div>
+      </form>
+    );
+  }
 
-        <p ref={elem => this.errorMessage = elem} className="errorMessage hidden">Smth went wrong...</p>
-        <form name="form2" className="col s12">
-          <div className="row">
-            <div className="input-field col s12">
-              <ul id="list">
-                {
-                  this.state.todos.length ? (
+  errorMessagePanel = () => {
+    return (
+      <p ref={elem => this.errorMessage = elem} className="errorMessage hidden center-align">Smth went wrong...</p>
+    );
+  }
+
+  todoItemsListPanel = () => {
+    if (this.state.postsAreLoading) {
+      return <Spinner />;
+    } else {
+      if (this.state.todos.length) {
+        return (
+          <form name="form2" className="col s12">
+            <h3 className="center-align">List of todos</h3>
+            <div className="row">
+              <div className="input-field col s12">
+                <ul id="list">
+                  {
                     this.state.todos.map((item, index) => {
                       return (
                         <ListItem key={index}
@@ -167,15 +178,28 @@ export default class TodoList extends React.Component {
                         />
                       )
                     })
-                  ) : (
-                    <p id="todosLoadingStatus">{this.state.emptyList}</p>
-                  )
-                }
-              </ul>
+                  }
+                </ul>
+              </div>
             </div>
+          </form>
+        );
+      } else {
+        return (
+          <div className="col s12">
+            <p id="todosLoadingStatus">"Smth went wrong. Check out console log"</p>
           </div>
-        </form>
+        );
+      }
+    }
+  }
 
+  render() {
+    return (
+      <div className="row">
+        { this.submitFormPanel() }
+        { this.errorMessagePanel() }
+        { this.todoItemsListPanel() }
       </div>
     );
   }
